@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Global Tech Byte">
+  <rect width="64" height="64" rx="14" fill="#03101f"/>
+  <path d="M18 10h28l8 8v28l-8 8H18l-8-8V18z" fill="#061a34" stroke="#1685ff" stroke-width="3"/>
+  <text x="32" y="38" text-anchor="middle" fill="#52adff" font-family="Arial, sans-serif" font-size="17" font-weight="700">GTB</text>
+</svg>

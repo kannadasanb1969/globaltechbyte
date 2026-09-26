@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://globaltechbyte.com/sitemap.xml
+Sitemap: https://www.globaltechbyte.com/sitemap.xml

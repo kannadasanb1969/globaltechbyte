@@ -1,1 +1,0 @@
-This folder contains the built output assets for the worker "global-tech-byte-website" generated at 2026-09-28T16:40:14.853Z.

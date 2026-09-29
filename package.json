@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.mjs",
-    "build": "node -e \"console.log('Static React build is ready in public/')\"",
+    "build": "node scripts/build-seo.mjs",
     "deploy": "wrangler deploy",
     "preview": "wrangler dev"
   },

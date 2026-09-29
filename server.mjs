@@ -32,12 +32,17 @@ function safePath(urlPath) {
   return path.join(publicDir, localPath);
 }
 
-async function sendFile(res, filePath) {
+async function sendFile(res, filePath, statusCode = 200) {
   const data = await readFile(filePath);
   const ext = path.extname(filePath).toLowerCase();
-  res.writeHead(200, {
+  const isHashedAsset = filePath.includes(`${path.sep}assets${path.sep}`);
+  res.writeHead(statusCode, {
     'Content-Type': mime[ext] || 'application/octet-stream',
-    'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=3600',
+    'Cache-Control': ext === '.html'
+      ? 'no-cache'
+      : isHashedAsset
+        ? 'public, max-age=31536000, immutable'
+        : 'public, max-age=86400',
   });
   res.end(data);
 }
@@ -53,8 +58,15 @@ const server = http.createServer(async (req, res) => {
       await sendFile(res, target);
       return;
     } catch {
-      // React Router SPA fallback for routes such as /about and /services.
-      await sendFile(res, path.join(publicDir, 'index.html'));
+      try {
+        const htmlTarget = `${target}.html`;
+        const info = await stat(htmlTarget);
+        if (!info.isFile()) throw new Error('Not a file');
+        await sendFile(res, htmlTarget);
+        return;
+      } catch {
+        await sendFile(res, path.join(publicDir, '404.html'), 404);
+      }
     }
   } catch (error) {
     res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });

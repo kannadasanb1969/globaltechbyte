@@ -28,7 +28,8 @@ const mime = {
 function safePath(urlPath) {
   const decoded = decodeURIComponent(urlPath.split('?')[0]);
   const normalized = path.normalize(decoded).replace(/^([.][.][/\\])+/, '');
-  return path.join(publicDir, normalized);
+  const localPath = normalized.replace(/^[/\\]global-tech-byte-website(?=[/\\]|$)/, '');
+  return path.join(publicDir, localPath);
 }
 
 async function sendFile(res, filePath) {

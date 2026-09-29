@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const publicDir = path.join(__dirname, 'public');
 const port = Number(process.env.PORT || 3000);
 const host = process.env.HOST || '0.0.0.0';
 
@@ -27,7 +28,7 @@ const mime = {
 function safePath(urlPath) {
   const decoded = decodeURIComponent(urlPath.split('?')[0]);
   const normalized = path.normalize(decoded).replace(/^([.][.][/\\])+/, '');
-  return path.join(__dirname, normalized);
+  return path.join(publicDir, normalized);
 }
 
 async function sendFile(res, filePath) {
@@ -52,7 +53,7 @@ const server = http.createServer(async (req, res) => {
       return;
     } catch {
       // React Router SPA fallback for routes such as /about and /services.
-      await sendFile(res, path.join(__dirname, 'index.html'));
+      await sendFile(res, path.join(publicDir, 'index.html'));
     }
   } catch (error) {
     res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });

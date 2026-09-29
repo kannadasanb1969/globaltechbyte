@@ -1,6 +1,6 @@
 {
-  "name": "tight-rice-0af0",
-  "compatibility_date": "2026-09-28",
+  "name": "globaltechbyte",
+  "compatibility_date": "2026-09-29",
   "assets": {
     "directory": "./public",
     "not_found_handling": "single-page-application"

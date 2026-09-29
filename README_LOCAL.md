@@ -1,25 +1,34 @@
-# Global Tech Byte Website - Local Run
+# Global Tech Byte Website
 
-The uploaded ZIP contained an already-built React website rather than the original React `src/` project. This package keeps the existing React UI intact and adds a zero-dependency local server so it runs with `npm run start`.
+This package contains the supplied compiled React website configured for local use and Cloudflare Workers Static Assets.
 
-## Run
+## Local run
 
 ```bash
 npm run start
 ```
 
-Open:
+Open `http://localhost:3000/`. The local server serves `public/` and supports SPA fallback for direct React routes.
 
-```text
-http://localhost:3000/
+## Cloudflare deploy
+
+Install dependencies, then deploy:
+
+```bash
+npm install
+npm run deploy
 ```
 
-No `npm install` is required because the local server uses only Node.js built-in modules.
+Wrangler deploys **only `public/`**. `node_modules`, `.git`, `.wrangler`, and local files are not part of the asset directory.
 
-## Routes
+Worker name: `globaltechbyte`
 
-React Router SPA fallback is enabled, so routes such as `/about`, `/services`, `/work`, `/careers`, `/internships`, and `/contact` work when opened directly.
+Cloudflare SPA routing is handled by `assets.not_found_handling = single-page-application`; no `_redirects` file is needed.
 
-## Important
+## Recommended Cloudflare Git build settings
 
-The original editable React component source (`src/`) was not present in the uploaded ZIP. This does not recreate missing source code; it makes the supplied compiled React website runnable locally via npm.
+- Build command: `npm install`
+- Deploy command: `npm run deploy`
+- Root directory: `/`
+
+The uploaded archive did not contain the original editable React `src/` source. The existing compiled website UI/assets are preserved.

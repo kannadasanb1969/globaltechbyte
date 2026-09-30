@@ -10,6 +10,7 @@ const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const publicDir = path.join(rootDir, 'public');
 const port = 4179;
 const origin = `http://127.0.0.1:${port}`;
+const siteOrigin = 'https://globaltechbyte.com';
 const execFileAsync = promisify(execFile);
 
 const pages = [
@@ -28,7 +29,8 @@ const pages = [
 const titleReplacements = new Map([
   ['Global Tech Byte | Web Applications Development with Modern Technologies', 'Web Application Development Company | Global Tech Byte'],
   ['title:`About Us`', 'title:`About Our Software Development Company`'],
-  ['title:`Services`', 'title:`Custom Web Application Development Services`'],
+  ['title:`Services`', 'title:`Web App Development Services`'],
+  ['title:`Custom Web Application Development Services`', 'title:`Web App Development Services`'],
   ['title:`Work`', 'title:`Software Solutions & Product Concepts`'],
   ['title:`Careers`', 'title:`Software Development Careers`'],
   ['title:`Internships`', 'title:`Technology Internships`'],
@@ -43,6 +45,12 @@ function patchBundles() {
     const original = source;
 
     for (const [from, to] of titleReplacements) source = source.replaceAll(from, to);
+
+    source = source.replaceAll('https://www.globaltechbyte.com', siteOrigin);
+    source = source.replaceAll(
+      'Global Tech Byte helps you turn your ideas into powerful web applications through custom development, a modern technology stack, and a business-focused approach.',
+      'Global Tech Byte builds powerful web applications with custom development, modern technology, and a business-focused approach.',
+    );
 
     source = source
       .replaceAll('`${m}/images/hero/hero-person.webp`', '`${m}/og-image.jpg`')
@@ -96,7 +104,7 @@ function injectPageSchema(html, page) {
   if (!page.type || page.path === '/') return html;
   const title = html.match(/<title>(.*?)<\/title>/s)?.[1]?.trim();
   const description = html.match(/<meta name="description" content="([^"]*)"/s)?.[1]?.trim();
-  const url = `https://www.globaltechbyte.com${page.path}`;
+  const url = `${siteOrigin}${page.path}`;
   const schema = {
     '@context': 'https://schema.org',
     '@type': page.type,
@@ -104,23 +112,45 @@ function injectPageSchema(html, page) {
     url,
     name: title,
     description,
-    isPartOf: { '@id': 'https://www.globaltechbyte.com/#website' },
-    about: { '@id': 'https://www.globaltechbyte.com/#organization' },
+    isPartOf: { '@id': `${siteOrigin}/#website` },
+    about: { '@id': `${siteOrigin}/#organization` },
   };
   return html.replace('</head>', `  <script type="application/ld+json">${JSON.stringify(schema)}</script>\n</head>`);
 }
 
 function cleanSnapshot(html, page) {
   let output = html
-    .replaceAll(origin, 'https://www.globaltechbyte.com')
-    .replace(/<link rel="modulepreload" as="script"[^>]+href="https:\/\/www\.globaltechbyte\.com\/global-tech-byte-website\/assets\/[^"]+"[^>]*>/g, '')
-    .replaceAll('https://www.globaltechbyte.com/global-tech-byte-website/assets/', '/assets/')
+    .replaceAll(origin, siteOrigin)
+    .replaceAll('https://www.globaltechbyte.com', siteOrigin)
+    .replace(/<link rel="modulepreload" as="script"[^>]+href="https:\/\/globaltechbyte\.com\/global-tech-byte-website\/assets\/[^"]+"[^>]*>/g, '')
+    .replaceAll(`${siteOrigin}/global-tech-byte-website/assets/`, '/assets/')
     .replace(/ style="opacity: 0; transform: translateY\([^)]*\);?"/g, '')
     .replace(/ style="opacity: 0; transform: translateX\([^)]*\);?"/g, '')
     .replace('<!DOCTYPE html>', '<!doctype html>');
 
   output = injectPageSchema(output, page);
   return `${output.trim()}\n`;
+}
+
+function writeSeoDiscoveryFiles() {
+  const lastmod = new Date().toISOString().slice(0, 10);
+  const excludedPaths = new Set(['/privacy-policy', '/terms', '/__seo-404__']);
+  const urls = pages
+    .filter((page) => !excludedPaths.has(page.path))
+    .map((page) => {
+      const url = page.path === '/' ? `${siteOrigin}/` : `${siteOrigin}${page.path}`;
+      return `  <url>\n    <loc>${url}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </url>`;
+    })
+    .join('\n');
+
+  writeFileSync(
+    path.join(publicDir, 'sitemap.xml'),
+    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
+  );
+  writeFileSync(
+    path.join(publicDir, 'robots.txt'),
+    `User-agent: *\nAllow: /\n\nSitemap: ${siteOrigin}/sitemap.xml\n`,
+  );
 }
 
 patchBundles();
@@ -181,4 +211,5 @@ try {
   await new Promise((resolve) => server.close(resolve));
 }
 
+writeSeoDiscoveryFiles();
 console.log('SEO build completed.');

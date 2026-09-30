@@ -95,9 +95,7 @@ function findChrome() {
     '/usr/bin/google-chrome',
     '/usr/bin/chromium',
   ].filter(Boolean);
-  const browser = candidates.find(existsSync);
-  if (!browser) throw new Error('Chrome or Edge is required to prerender the site. Set CHROME_PATH and retry.');
-  return browser;
+  return candidates.find(existsSync) || null;
 }
 
 function injectPageSchema(html, page) {
@@ -183,30 +181,37 @@ await new Promise((resolve, reject) => {
 
 try {
   const browser = findChrome();
-  const browserProfile = mkdtempSync(path.join(tmpdir(), 'gtb-prerender-'));
-  for (const page of pages) {
-    const { stdout: html } = await execFileAsync(browser, [
-      '--headless=new',
-      '--disable-gpu',
-      '--disable-background-networking',
-      '--disable-component-update',
-      '--disable-extensions',
-      '--no-first-run',
-      '--no-sandbox',
-      `--user-data-dir=${browserProfile}`,
-      '--virtual-time-budget=5000',
-      '--dump-dom',
-      `${origin}${page.path}`,
-    ], { encoding: 'utf8', maxBuffer: 25 * 1024 * 1024, windowsHide: true });
+  if (!browser) {
+    console.log('Chrome/Edge not available in build environment; using committed prerendered HTML files.');
+  } else {
+    const browserProfile = mkdtempSync(path.join(tmpdir(), 'gtb-prerender-'));
+    try {
+      for (const page of pages) {
+        const { stdout: html } = await execFileAsync(browser, [
+          '--headless=new',
+          '--disable-gpu',
+          '--disable-background-networking',
+          '--disable-component-update',
+          '--disable-extensions',
+          '--no-first-run',
+          '--no-sandbox',
+          `--user-data-dir=${browserProfile}`,
+          '--virtual-time-budget=5000',
+          '--dump-dom',
+          `${origin}${page.path}`,
+        ], { encoding: 'utf8', maxBuffer: 25 * 1024 * 1024, windowsHide: true });
 
-    const snapshot = cleanSnapshot(html, page);
-    if (!snapshot.includes('<h1') || !snapshot.includes('<link rel="canonical"')) {
-      throw new Error(`Prerender validation failed for ${page.path}`);
+        const snapshot = cleanSnapshot(html, page);
+        if (!snapshot.includes('<h1') || !snapshot.includes('<link rel="canonical"')) {
+          throw new Error(`Prerender validation failed for ${page.path}`);
+        }
+        writeFileSync(path.join(publicDir, page.file), snapshot);
+        console.log(`Prerendered ${page.path} -> public/${page.file}`);
+      }
+    } finally {
+      rmSync(browserProfile, { recursive: true, force: true });
     }
-    writeFileSync(path.join(publicDir, page.file), snapshot);
-    console.log(`Prerendered ${page.path} -> public/${page.file}`);
   }
-  rmSync(browserProfile, { recursive: true, force: true });
 } finally {
   await new Promise((resolve) => server.close(resolve));
 }

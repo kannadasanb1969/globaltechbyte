@@ -21,6 +21,12 @@ const pages = [
   { path: '/careers', file: 'careers.html', type: 'WebPage' },
   { path: '/internships', file: 'internships.html', type: 'WebPage' },
   { path: '/contact', file: 'contact.html', type: 'ContactPage' },
+  { path: '/web-development-company-chennai', file: 'web-development-company-chennai.html', type: 'WebPage' },
+  { path: '/mobile-app-development-company-chennai', file: 'mobile-app-development-company-chennai.html', type: 'WebPage' },
+  { path: '/custom-software-development-chennai', file: 'custom-software-development-chennai.html', type: 'WebPage' },
+  { path: '/react-development-company-chennai', file: 'react-development-company-chennai.html', type: 'WebPage' },
+  { path: '/dotnet-development-company-chennai', file: 'dotnet-development-company-chennai.html', type: 'WebPage' },
+  { path: '/software-company-tambaram', file: 'software-company-tambaram.html', type: 'WebPage' },
   { path: '/privacy-policy', file: 'privacy-policy.html', type: 'WebPage' },
   { path: '/terms', file: 'terms.html', type: 'WebPage' },
   { path: '/__seo-404__', file: '404.html', type: null },
@@ -60,9 +66,35 @@ function patchBundles() {
       .replaceAll('alt:e.title,loading:`lazy`', 'alt:e.title,width:1024,height:768,loading:`lazy`,decoding:`async`');
 
     if (file === 'index-79ECsEKK.js') {
+      const seoLandingImport = 'import{WebDevelopment as SeoWebDevelopment,MobileAppDevelopment as SeoMobileAppDevelopment,CustomSoftwareDevelopment as SeoCustomSoftwareDevelopment,ReactDevelopment as SeoReactDevelopment,DotNetDevelopment as SeoDotNetDevelopment,TambaramSoftwareCompany as SeoTambaramSoftwareCompany}from"./SeoLandingPages.js";';
+      if (source.startsWith(seoLandingImport)) source = source.slice(seoLandingImport.length);
+
+      if (!source.includes('var SeoWebDevelopment=')) {
+        const seoLazyComponents = 'var SeoWebDevelopment=(0,w.lazy)(()=>import(`./SeoLandingPages.js`).then(e=>({default:e.WebDevelopment}))),SeoMobileAppDevelopment=(0,w.lazy)(()=>import(`./SeoLandingPages.js`).then(e=>({default:e.MobileAppDevelopment}))),SeoCustomSoftwareDevelopment=(0,w.lazy)(()=>import(`./SeoLandingPages.js`).then(e=>({default:e.CustomSoftwareDevelopment}))),SeoReactDevelopment=(0,w.lazy)(()=>import(`./SeoLandingPages.js`).then(e=>({default:e.ReactDevelopment}))),SeoDotNetDevelopment=(0,w.lazy)(()=>import(`./SeoLandingPages.js`).then(e=>({default:e.DotNetDevelopment}))),SeoTambaramSoftwareCompany=(0,w.lazy)(()=>import(`./SeoLandingPages.js`).then(e=>({default:e.TambaramSoftwareCompany})));';
+        source = source.replace('function bo(){', `${seoLazyComponents}function bo(){`);
+      }
+
+      const routeAnchor = '(0,M.jsx)(bn,{path:`/privacy-policy`';
+      if (!source.includes('path:`/web-development-company-chennai`')) {
+        const seoRoutes = [
+          '(0,M.jsx)(bn,{path:`/web-development-company-chennai`,element:(0,M.jsx)(SeoWebDevelopment,{})})',
+          '(0,M.jsx)(bn,{path:`/mobile-app-development-company-chennai`,element:(0,M.jsx)(SeoMobileAppDevelopment,{})})',
+          '(0,M.jsx)(bn,{path:`/custom-software-development-chennai`,element:(0,M.jsx)(SeoCustomSoftwareDevelopment,{})})',
+          '(0,M.jsx)(bn,{path:`/react-development-company-chennai`,element:(0,M.jsx)(SeoReactDevelopment,{})})',
+          '(0,M.jsx)(bn,{path:`/dotnet-development-company-chennai`,element:(0,M.jsx)(SeoDotNetDevelopment,{})})',
+          '(0,M.jsx)(bn,{path:`/software-company-tambaram`,element:(0,M.jsx)(SeoTambaramSoftwareCompany,{})})',
+        ].join(',');
+        source = source.replace(routeAnchor, `${seoRoutes},${routeAnchor}`);
+      }
+
       source = source
         .replace('var co=[{title:`Software Development Careers`', 'var co=[{title:`Careers`')
         .replace('},{title:`Technology Internships`,description:', '},{title:`Internships`,description:');
+    }
+
+    if (file === 'Services-BQvRuYew.js' && !source.includes('Dedicated Chennai Service Pages')) {
+      const serviceLinks = '(0,p.jsx)(`section`,{className:`px-4 py-16 sm:px-6 lg:px-8`,children:(0,p.jsxs)(`div`,{className:`mx-auto max-w-6xl rounded-[2.5rem] bg-[var(--color-peach)] p-8 sm:p-10`,children:[(0,p.jsx)(`p`,{className:`text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-orange)]`,children:`Dedicated Chennai Service Pages`}),(0,p.jsx)(`h2`,{className:`mt-3 text-3xl font-extrabold tracking-tight text-[var(--color-ink)]`,children:`Explore Our Development Expertise`}),(0,p.jsx)(`p`,{className:`mt-4 max-w-3xl text-[var(--color-text-gray)]`,children:`Learn how our focused web, mobile, custom software, React and .NET capabilities apply to businesses in Chennai and Tambaram.`}),(0,p.jsx)(`div`,{className:`mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3`,children:[(0,p.jsx)(`a`,{href:`/web-development-company-chennai`,className:`focus-ring rounded-2xl bg-white p-5 font-semibold text-[var(--color-ink)] hover:text-[var(--color-orange)]`,children:`Web Development Services in Chennai`}),(0,p.jsx)(`a`,{href:`/mobile-app-development-company-chennai`,className:`focus-ring rounded-2xl bg-white p-5 font-semibold text-[var(--color-ink)] hover:text-[var(--color-orange)]`,children:`Mobile App Development in Chennai`}),(0,p.jsx)(`a`,{href:`/custom-software-development-chennai`,className:`focus-ring rounded-2xl bg-white p-5 font-semibold text-[var(--color-ink)] hover:text-[var(--color-orange)]`,children:`Custom Software Development`}),(0,p.jsx)(`a`,{href:`/react-development-company-chennai`,className:`focus-ring rounded-2xl bg-white p-5 font-semibold text-[var(--color-ink)] hover:text-[var(--color-orange)]`,children:`React Development Services`}),(0,p.jsx)(`a`,{href:`/dotnet-development-company-chennai`,className:`focus-ring rounded-2xl bg-white p-5 font-semibold text-[var(--color-ink)] hover:text-[var(--color-orange)]`,children:`.NET Development Services`}),(0,p.jsx)(`a`,{href:`/software-company-tambaram`,className:`focus-ring rounded-2xl bg-white p-5 font-semibold text-[var(--color-ink)] hover:text-[var(--color-orange)]`,children:`Software Development in Tambaram`})]})]})})';
+      source = source.replace('(0,p.jsx)(o,{})', `${serviceLinks},(0,p.jsx)(o,{})`);
     }
 
     if (source !== original) writeFileSync(filePath, source);

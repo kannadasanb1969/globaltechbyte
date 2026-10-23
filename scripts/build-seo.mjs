@@ -45,7 +45,7 @@ const titleReplacements = new Map([
 
 function patchBundles() {
   const assetsDir = path.join(publicDir, 'assets');
-  for (const file of ['index-79ECsEKK.js', 'About-GLVYQ1kO.js', 'Services-BQvRuYew.js', 'Work-CtlVAiBX.js', 'Careers-CIy020g6.js', 'Internships-SJsohXsj.js', 'Contact-lSU_TlJe.js', 'usePageMeta-C_nq1uxQ.js']) {
+  for (const file of ['index-79ECsEKN.js', 'About-GLVYQ1kO.js', 'Services-BQvRuYew.js', 'Work-CtlVAiBX.js', 'Careers-CIy020h9.js', 'Internships-SJsohXsj.js', 'Contact-lSU_TlJe.js', 'usePageMeta-C_nq1uxQ.js']) {
     const filePath = path.join(assetsDir, file);
     let source = readFileSync(filePath, 'utf8');
     const original = source;
@@ -65,7 +65,7 @@ function patchBundles() {
       .replaceAll('`index, follow`', '`index, follow, max-image-preview:large`')
       .replaceAll('alt:e.title,loading:`lazy`', 'alt:e.title,width:1024,height:768,loading:`lazy`,decoding:`async`');
 
-    if (file === 'index-79ECsEKK.js') {
+    if (file === 'index-79ECsEKN.js') {
       const seoLandingImport = 'import{WebDevelopment as SeoWebDevelopment,MobileAppDevelopment as SeoMobileAppDevelopment,CustomSoftwareDevelopment as SeoCustomSoftwareDevelopment,ReactDevelopment as SeoReactDevelopment,DotNetDevelopment as SeoDotNetDevelopment,TambaramSoftwareCompany as SeoTambaramSoftwareCompany}from"./SeoLandingPages.js";';
       if (source.startsWith(seoLandingImport)) source = source.slice(seoLandingImport.length);
 
